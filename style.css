@@ -1,0 +1,575 @@
+/* Core Variables */
+:root {
+  --primary-dark: #0a192f; /* Deep blue/black */
+  --primary-light: #1a1f35; /* Slightly lighter blue */
+  --accent-blue: #007BFF; /* Standard bright blue */
+  --accent-glow: #00f0ff; /* Cyan glow */
+  --text-primary: #ccd6f6; /* Lighter text for dark background */
+  --text-secondary: #8892b0; /* Greyer secondary text */
+  --matrix-color: rgba(0, 255, 100, 0.7); /* Adjusted Matrix green for text/accents */
+  --transition-standard: all 0.3s ease;
+  --danger-red: #dc3545; /* Replacing blood-red conceptually if needed, standard danger red */
+  --highlight-purple: '#A020F0'; /* For enemies or other highlights */
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  line-height: 1.6;
+  overflow-x: hidden;
+  background: var(--primary-dark);
+  color: var(--text-primary);
+}
+
+/* MATRIX CANVAS */
+#matrix-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-dark);
+  z-index: -2;
+  pointer-events: none; /* Allows clicks to pass through */
+}
+
+/* Game Canvas Specifics (if different from background) */
+/* Canvas used for game might need pointer-events enabled */
+/* #game-canvas { pointer-events: auto; } */
+
+
+/* PARTICLES */
+.particles-container {
+  position: fixed; /* Use fixed to ensure it covers viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1; /* Above canvas, below content */
+}
+.particle {
+  position: absolute;
+  background: rgba(0, 240, 255, 0.5); /* Use accent glow color */
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease-out; /* For fade-out effect */
+  /* Size set in JS */
+}
+.energy-wave {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 240, 255, 0.3) 0%, /* Accent glow, softer */
+    rgba(0, 123, 255, 0.1) 30%, /* Accent blue */
+    transparent 70%
+  );
+  animation: ripple 3s ease-out forwards; /* Changed animation */
+  width: 200px; /* Fixed size */
+  height: 200px;
+  opacity: 0.7; /* Start with some opacity */
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.5); /* Slightly smaller max scale */
+    opacity: 0;
+  }
+}
+
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 25, 47, 0.85); /* Dark blue, semi-transparent */
+  padding: 0.8rem 2rem; /* Slightly reduced padding */
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid transparent; /* For scrolled state */
+}
+
+.navbar.scrolled {
+    background: rgba(10, 25, 47, 0.95); /* More opaque when scrolled */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2); /* Subtle blue line */
+}
+
+
+.navbar .logo img {
+    height: 40px; /* Control logo size */
+    transition: var(--transition-standard);
+}
+.navbar .logo img:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 992px) {
+  .navbar .logo img {
+    height: 35px; /* Smaller logo on mobile */
+  }
+   .navbar {
+        padding: 0.8rem 1rem; /* Less padding on mobile */
+   }
+}
+
+/* NAV LINKS (DESKTOP) */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem; /* Slightly reduced gap */
+}
+
+.nav-links li {
+  position: relative;
+}
+
+.nav-links li a {
+  color: var(--text-secondary); /* Use secondary text color */
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0; /* Add padding for hover effect */
+  position: relative;
+  transition: var(--transition-standard);
+}
+.nav-links li a::after { /* Underline hover effect */
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--accent-glow);
+    transition: width 0.3s ease;
+}
+
+.nav-links li a:hover {
+  color: var(--text-primary); /* Highlight on hover */
+}
+.nav-links li a:hover::after {
+    width: 100%;
+}
+
+/* Remove Dropdown Styles if not needed */
+/* .nav-links li:hover .dropdown { ... } */
+/* .dropdown { ... } */
+/* .dropdown li a { ... } */
+/* .dropdown li a:hover { ... } */
+
+/* HAMBURGER (MOBILE) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+  padding: 5px; /* Easier to tap */
+  z-index: 1001; /* Above navbar content potentially */
+  transition: var(--transition-standard);
+}
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: var(--text-primary);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger X transform (Optional) */
+.hamburger.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+
+/* Hamburger color change on scroll (Optional) */
+.hamburger.scrolled span {
+  /* background: var(--accent-blue); */ /* Example: change color on scroll */
+}
+
+/* MOBILE MENU OVERLAY */
+.mobile-menu {
+  position: fixed;
+  top: 0; /* Align to top */
+  right: 0; /* Align to right */
+  width: min(75vw, 300px); /* Responsive width */
+  height: 100vh; /* Full height */
+  background: var(--primary-light); /* Use light primary color */
+  padding: 6rem 2rem 2rem 2rem; /* Padding top for navbar space */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items left */
+  gap: 1.5rem;
+  transform: translateX(100%); /* Start off-screen */
+  transition: transform 0.3s ease-in-out;
+  z-index: 999; /* Below navbar controls, above content */
+  visibility: hidden; /* Hide initially */
+  box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+}
+.mobile-menu.open {
+  transform: translateX(0); /* Slide in */
+  visibility: visible;
+}
+.mobile-menu a {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  text-decoration: none;
+  width: 100%;
+  padding: 0.5rem 0; /* Simpler padding */
+  text-align: left;
+}
+.mobile-menu a:hover {
+  color: var(--accent-glow);
+}
+
+/* Remove Mobile Dropdown Styles if not needed */
+/* .mobile-dropdown { ... } */
+/* .mobile-dropdown a { ... } */
+/* .mobile-dropdown.open { ... } */
+
+/* SHOW HAMBURGER FOR MOBILE, HIDE DESKTOP LINKS */
+@media (max-width: 768px) { /* Adjusted breakpoint */
+  .hamburger {
+    display: flex;
+  }
+  .nav-links {
+    display: none;
+  }
+  .navbar {
+    padding: 0.8rem 1rem; /* Adjust padding for mobile */
+  }
+}
+
+/* Remove Matrix "M" Logo styles */
+/* .matrix-m { ... } */
+/* @keyframes pulse-red { ... } */
+/* @keyframes glitch { ... } */
+
+/* SECTION BASE */
+.section {
+  padding: 4rem 1rem; /* More vertical padding, less horizontal */
+  opacity: 0;
+  transform: translateY(30px);
+  position: relative; /* Keep for z-index stacking */
+  z-index: 2;
+  animation: fadeUp 0.8s ease-out forwards;
+  margin-top: 60px; /* Adjust if navbar height changes */
+  min-height: calc(100vh - 60px); /* Try to make sections fill viewport height */
+  display: flex; /* Center content vertically */
+  flex-direction: column;
+  justify-content: center;
+}
+
+#home {
+  padding-top: 80px; /* Extra padding for home */
+}
+
+/* Animations */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title & Subtitle */
+.title {
+  font-size: clamp(2rem, 5vw, 3rem); /* Responsive font size */
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--text-primary); /* Use primary text color */
+  font-weight: 600;
+}
+.subtitle {
+  font-size: clamp(1rem, 3vw, 1.3rem); /* Responsive font size */
+  color: var(--text-secondary); /* Use secondary text color */
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+/* Skills Container (Home icons) */
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem; /* Increased gap */
+  margin: 2rem auto; /* More margin */
+}
+.skill-icon {
+  background: rgba(26, 31, 53, 0.7); /* primary-light with alpha */
+  border: 1px solid rgba(0, 123, 255, 0.2); /* Subtle blue border */
+  border-radius: 8px;
+  padding: 1rem; /* More padding */
+  display: flex;
+  flex-direction: column; /* Stack image and label */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.9); /* Start slightly smaller */
+  transition: var(--transition-standard), transform 0.3s ease;
+  cursor: pointer;
+  animation: fadeScale 0.8s forwards;
+  position: relative;
+  width: 220px; /* Fixed width */
+  height: 220px; /* Fixed height */
+}
+.skill-icon:hover {
+  transform: scale(1.05) !important; /* Slight grow effect */
+  background: rgba(26, 31, 53, 0.9); /* Darken background */
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); /* Accent glow shadow */
+  border-color: rgba(0, 240, 255, 0.5);
+}
+.skill-icon img {
+  width: 120px; /* Adjust image size within the box */
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 1rem; /* Space between image and label */
+}
+
+/* Icon Label (Text Below PNGs) */
+.icon-label {
+  position: static; /* Remove absolute positioning */
+  transform: none; /* Reset transform */
+  font-size: 1rem; /* Adjust font size */
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: none; /* Remove text shadow */
+  font-weight: 500;
+  transition: var(--transition-standard);
+  /* animation: none; Remove pulse text animation */
+}
+.skill-icon:hover .icon-label {
+  color: var(--accent-glow); /* Change label color on hover */
+  text-shadow: 0 0 5px var(--accent-glow);
+}
+
+/* FadeScale Animation */
+@keyframes fadeScale {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* Translucent Box Styling */
+.translucent-box {
+  background: rgba(10, 25, 47, 0.7); /* Darker, less transparent */
+  margin: 0 auto;
+  border-radius: 8px;
+  padding: 2rem clamp(1rem, 5vw, 3rem); /* Responsive padding */
+  max-width: 960px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  border: 1px solid rgba(0, 123, 255, 0.1); /* Subtle border */
+}
+
+/* Section specific adjustments */
+#characters .translucent-box,
+#simulation-info .translucent-box,
+#pitch .translucent-box {
+    text-align: left; /* Align text left for content pages */
+}
+
+#characters .translucent-box p,
+#simulation-info .translucent-box p,
+#pitch .translucent-box p {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+#characters .translucent-box h3,
+#simulation-info .translucent-box h3,
+#pitch .translucent-box h3 {
+    color: var(--accent-blue);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Character Card Styling (Basic) */
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.character-card {
+  background: var(--primary-light); /* Match skill icon bg */
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 123, 255, 0.2);
+  transition: var(--transition-standard);
+}
+.character-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-glow);
+}
+.character-card img {
+  display: block;
+  width: 100%;
+  max-width: 200px; /* Limit image size */
+  height: auto;
+  margin: 0 auto 1rem auto; /* Center image */
+  border-radius: 4px;
+  background-color: var(--primary-dark); /* Placeholder background */
+}
+.character-card h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+.character-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+
+/* SOCIAL LINKS (for Pitch/Engage Page) */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+.social-links a {
+    display: inline-block; /* Allows transform */
+    transition: transform 0.2s ease;
+}
+.social-links img {
+  width: 35px; /* Slightly smaller */
+  height: 35px;
+  opacity: 0.7;
+  transition: var(--transition-standard);
+}
+.social-links a:hover img {
+  opacity: 1;
+}
+.social-links a:hover {
+    transform: scale(1.1);
+}
+/* Removed .social-link class styles as direct img links are used now */
+
+
+/* Game Popup */
+.game-popup {
+    /* Styles defined inline in JS - can be moved here for consistency */
+    /* Example: */
+    /* position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); */
+    /* background: rgba(10, 25, 47, 0.95); color: white; padding: 30px; */
+    /* border-radius: 10px; z-index: 1001; text-align: center; */
+    /* font-size: 1.5rem; border: 1px solid var(--accent-blue); */
+    /* box-shadow: 0 0 20px rgba(0, 123, 255, 0.5); */
+}
+.game-popup button {
+    /* Style buttons via CSS */
+    /* margin-top: 20px; padding: 8px 15px; */
+    /* color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; */
+    /* transition: background-color 0.2s ease; */
+}
+/* .game-popup button#replay-btn { background: var(--accent-blue); margin-right: 15px; } */
+/* .game-popup button#ok-btn { background: #555; } */
+/* .game-popup button:hover { opacity: 0.9; } */
+
+
+/* Remove Pill Choice Styles if not used */
+/* .pill-choice { ... } */
+/* .pill { ... } */
+/* .red-pill { background: var(--danger-red); }  Use danger red */
+/* .blue-pill { background: var(--accent-blue); } */
+/* .pill:hover { ... } */
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .translucent-box {
+    max-width: 95%;
+    padding: 1.5rem 1rem; /* Adjust padding */
+  }
+  .skills-container {
+    gap: 1rem;
+  }
+  .skill-icon {
+      width: 180px; /* Smaller icons on mobile */
+      height: 180px;
+  }
+  .skill-icon img {
+      width: 100px;
+      height: 100px;
+  }
+  .title {
+    /* Already responsive with clamp */
+  }
+  .subtitle {
+    /* Already responsive with clamp */
+  }
+  .section {
+    padding: 3rem 0.5rem; /* Less padding on mobile */
+    margin-top: 55px; /* Adjust for potentially smaller navbar */
+    min-height: calc(100vh - 55px);
+  }
+  #home {
+    padding-top: 60px;
+  }
+  .character-grid {
+      grid-template-columns: 1fr; /* Single column on small screens */
+      gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+    .skills-container {
+        gap: 0.8rem; /* Even smaller gap */
+    }
+    .skill-icon {
+        width: 150px; /* Further reduce size */
+        height: 150px;
+    }
+     .skill-icon img {
+        width: 80px;
+        height: 80px;
+    }
+     .skill-icon .icon-label {
+        font-size: 0.8rem;
+    }
+    .social-links img {
+        width: 30px;
+        height: 30px;
+    }
+    .game-popup {
+        width: 90%;
+        font-size: 1.2rem;
+        padding: 20px;
+    }
+    .game-popup button {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+}
