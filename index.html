@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Asteri Project</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div id="particles-container" class="particles-container"></div>
+
+ <nav class="navbar">
+  <!-- Placeholder for logo -->
+  <div class="logo"><a href="index.html"><img src="images/asteri-project-logo.png" alt="The Asteri Project Logo" height="40" style="vertical-align: middle;"></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="characters.html">Characters</a></li>
+    <li><a href="simulation.html">The Simulation</a></li>
+    <li><a href="pitch.html">Pitch Overview</a></li>
+  </ul>
+  <!-- Removed the Matrix M -->
+  <div id="hamburger" class="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+  <div id="mobile-menu" class="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="characters.html">Characters</a>
+    <a href="simulation.html">The Simulation</a>
+    <a href="pitch.html">Pitch Overview</a>
+    <!-- Removed old mobile dropdown -->
+  </div>
+
+  <section id="home" class="section">
+    <div class="translucent-box">
+      <h1 class="title" style="font-size: 3.5rem; text-shadow: 0 0 10px var(--accent-glow);">
+        WELCOME TO <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
+      </h1>
+      <p class="subtitle">NAVIGATE THE NESTED REALITIES. UNCOVER THE TRUTH.</p>
+
+      <!-- Video Placeholder -->
+      <div style="margin: 2rem auto; max-width: 720px; aspect-ratio: 16 / 9; background: #111; border: 1px solid var(--accent-blue); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+         <video width="100%" height="100%" controls style="display: block;">
+            <source src="videos/theasteriproject.mp4" type="video/mp4">
+            Video placeholder: theasteriproject.mp4 not found.
+         </video>
+      </div>
+
+
+      <div class="skills-container">
+        <!-- Placeholder Icons - Update image src and labels as needed -->
+        <a href="simulation.html"><div class="skill-icon"><img src="images/simulation-overview.png" alt="Simulation Overview"><span class="icon-label">DREAM-STATE SIMS</span></div></a>
+        <a href="simulation.html#nested-suns"><div class="skill-icon"><img src="images/nested-suns.png" alt="Nested Suns"><span class="icon-label">NESTED SUNS</span></div></a>
+        <a href="simulation.html#bio-grids"><div class="skill-icon"><img src="images/bio-grid.png" alt="Bio-Computing Grid"><span class="icon-label">BIO-COMPUTING</span></div></a>
+      </div>
+      <button onclick="startGame()" style="padding: 1rem 2rem; background: var(--accent-blue); color: #fff; border: none; cursor: pointer; margin-top: 2rem; font-weight: bold;">
+        INITIATE TRAINING SIMULATION
+      </button>
+       <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">(Desktop Only)</p>
+    </div>
+  </section>
+
+  <!-- Removed old Project, Manifesto, Uplink sections -->
+
+  <script src="script.js"></script>
+</body>
+</html>
