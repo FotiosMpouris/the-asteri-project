@@ -1,6 +1,6 @@
 // =================================================================
-// THE ASTERI PROJECT - SCRIPT.JS - V7.0 (Definitive Version)
-// - Starfield animation now has a 3D parallax effect on mouse move.
+// THE ASTERI PROJECT - SCRIPT.JS - V7.1 (Parallax Fixed)
+// - The 3D parallax effect has been made significantly more pronounced.
 // =================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,21 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =================================================================
-// UNIFIED STARFIELD & HOLOGRAM ANIMATION WITH PARALLAX
+// UNIFIED STARFIELD & HOLOGRAM ANIMATION WITH PRONOUNCED PARALLAX
 // =================================================================
 function initializeUnifiedEffect() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext('2d');
 
-  // --- Parallax Mouse Tracker ---
   const mouse = { x: 0, y: 0 };
   
-  // --- Starfield Setup ---
   let stars = [];
   const starCount = window.innerWidth < 768 ? 150 : 300;
 
-  // --- Hologram Setup ---
   const hologramPoints = [];
   const numHologramPoints = 250;
   const hologramRadius = (Math.min(window.innerWidth, window.innerHeight) * 0.3);
@@ -51,8 +48,8 @@ function initializeUnifiedEffect() {
         radius: Math.random() * 1.2 + 0.5,
         alpha: Math.random() * 0.5 + 0.2,
         pulseSpeed: (Math.random() - 0.5) * 0.0005,
-        // NEW: Depth property for parallax effect
-        depth: Math.random() * 0.6 + 0.1 // 0.1 (far) to 0.7 (near)
+        // CORRECTED: Depth range is now greater for a better 3D effect.
+        depth: Math.random() * 0.8 + 0.2 // Range: 0.2 (far) to 1.0 (near)
       });
     }
 
@@ -65,12 +62,11 @@ function initializeUnifiedEffect() {
   }
 
   function drawStarfield() {
-    // Calculate mouse offset from center for parallax
-    const offsetX = (mouse.x - canvas.width / 2) / 20; // Divide to reduce effect intensity
-    const offsetY = (mouse.y - canvas.height / 2) / 20;
+    // CORRECTED: The divisor is smaller, making the parallax effect much stronger.
+    const offsetX = (mouse.x - canvas.width / 2) / 8; 
+    const offsetY = (mouse.y - canvas.height / 2) / 8;
 
     stars.forEach(star => {
-      // Apply parallax shift
       const parallaxX = star.x + offsetX * star.depth;
       const parallaxY = star.y + offsetY * star.depth;
       
@@ -124,18 +120,15 @@ function initializeUnifiedEffect() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     drawStarfield();
     if (document.getElementById('hologram-hero')) {
         drawHologram();
     }
     angleY += 0.003;
     angleX += 0.001;
-
     requestAnimationFrame(animate);
   }
 
-  // --- Event Listeners ---
   window.addEventListener('resize', setup);
   window.addEventListener('mousemove', (e) => {
       mouse.x = e.clientX;
