@@ -6,25 +6,22 @@
   <title>The Asteri Project</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- FINAL STYLES FOR THE UNIFIED HOLOGRAPHIC BACKGROUND -->
+  <!-- FINAL STYLES FOR PARALLAX & FUTURISTIC CONTENT SECTION -->
   <style>
-    /* Make the body transparent to see the fixed canvas behind it */
     body {
       background: transparent;
     }
 
-    /* The canvas is now a fixed background for the ENTIRE site */
     #matrix-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100% !important;
       height: 100% !important;
-      z-index: -1; /* Place it behind all content */
-      background-color: #000; /* Pure black deep space */
+      z-index: -1;
+      background-color: #000;
     }
 
-    /* This hero section is a transparent spacer for the title */
     #hologram-hero {
       height: 100vh;
       display: flex;
@@ -34,12 +31,10 @@
       position: relative;
     }
     
-    /* Center the title and leave space for the hologram below */
     #hologram-hero .title-container {
         padding-bottom: 25vh;
     }
 
-    /* Scroll down indicator */
     #hologram-hero::after {
         content: 'SCROLL TO EXPLORE';
         position: absolute;
@@ -52,6 +47,7 @@
         font-size: 0.8rem;
         opacity: 0.7;
         animation: pulse 2.5s infinite alternate;
+        z-index: 2;
     }
 
     @keyframes pulse {
@@ -59,11 +55,18 @@
         to { opacity: 1; }
     }
 
-    /* The main content section MUST have a solid background to scroll over the effect */
+    /* NEW FUTURISTIC BACKGROUND FOR THE MAIN CONTENT */
     #main-content {
-        background: var(--primary-dark);
-        position: relative; /* Needed to establish a new stacking context */
-        z-index: 5; /* Ensure it's above the canvas */
+      position: relative;
+      z-index: 5;
+      /* Layer 1: A subtle nebula/galaxy effect */
+      background-image:
+        radial-gradient(ellipse at 20% 80%, rgba(0, 123, 255, 0.1), transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(0, 240, 255, 0.1), transparent 50%),
+        /* Layer 2: A faint hexagonal grid pattern */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23007bff' fill-opacity='0.05'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+        /* Layer 3: The solid base color */
+        var(--primary-dark);
     }
   </style>
 </head>
@@ -90,16 +93,14 @@
     <a href="pitch.html">Pitch Overview</a>
   </div>
 
-  <!-- The transparent hero section that reveals the hologram -->
   <section id="hologram-hero" class="section">
     <div class="title-container">
       <h1 class="title" style="font-size: 3.5rem; text-shadow: 0 0 15px var(--accent-glow);">
-        <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
+        WELCOME TO <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
       </h1>
     </div>
   </section>
 
-  <!-- The main content that will scroll over the hero effect -->
   <section id="main-content" class="section">
     <div class="translucent-box">
       <p class="subtitle">NAVIGATE THE NESTED REALITIES. UNCOVER THE TRUTH.</p>
