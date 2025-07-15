@@ -1,325 +1,241 @@
 // =================================================================
-// THE ASTERI PROJECT - SCRIPT.JS - V2.0
-// Replaced Matrix Rain with an Interactive Constellation Field background.
+// THE ASTERI PROJECT - SCRIPT.JS - V3.0
+// Replaced the game with a non-interactive 3D Hologram Planet effect.
 // =================================================================
 
-// Keep a reference to the background animation to stop it when the game starts.
+// Keep a reference to the background animation to manage its state.
 window.backgroundAnimationId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize the new background effect
   initializeConstellationEffect();
-
-  // Keep the original click effects
   document.addEventListener('click', (e) => {
     if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && !e.target.closest('a')) {
       createParticle(e);
       createEnergyWave(e.pageX, e.pageY);
     }
   });
-
   setupMobileNav();
   window.addEventListener('scroll', handleScroll);
 });
 
 
 // =================================================================
-// NEW INTERACTIVE CONSTELLATION EFFECT
-// =================================================================
-function initializeConstellationEffect() {
-  const canvas = document.getElementById('matrix-canvas');
-  if (!canvas || !canvas.getContext) return;
-  const ctx = canvas.getContext('2d');
-
-  let stars = [];
-  const starCount = window.innerWidth < 768 ? 100 : 200; // Fewer stars on mobile
-  const mouse = {
-    x: undefined,
-    y: undefined,
-    radius: 150 // Area of interaction around the mouse
-  };
-
-  function setupCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = [];
-    for (let i = 0; i < starCount; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.5 + 1, // Stars with different sizes
-        baseAlpha: Math.random() * 0.5 + 0.5, // Each star has a base brightness
-        alpha: 0
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    stars.forEach(star => {
-      // Pulsing effect
-      star.alpha = star.baseAlpha * (Math.sin(Date.now() * 0.001 + star.x) * 0.5 + 0.5);
-      ctx.fillStyle = `rgba(0, 240, 255, ${star.alpha})`; // Use accent glow color
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    connect();
-  }
-  
-  function connect() {
-    for (let a = 0; a < stars.length; a++) {
-        // Connect stars to other nearby stars
-        for (let b = a; b < stars.length; b++) {
-            let dx = stars[a].x - stars[b].x;
-            let dy = stars[a].y - stars[b].y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < 120) { // Max distance to connect stars
-                let opacity = 1 - (distance / 120);
-                ctx.strokeStyle = `rgba(0, 123, 255, ${opacity * 0.5})`; // Use accent blue
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(stars[a].x, stars[a].y);
-                ctx.lineTo(stars[b].x, stars[b].y);
-                ctx.stroke();
-            }
-        }
-        
-        // Connect stars to the mouse
-        if(mouse.x !== undefined && mouse.y !== undefined) {
-             let dxMouse = stars[a].x - mouse.x;
-             let dyMouse = stars[a].y - mouse.y;
-             let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
-             if(distanceMouse < mouse.radius) {
-                let opacity = 1 - (distanceMouse / mouse.radius);
-                ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`; // Brighter connection to mouse
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.moveTo(stars[a].x, stars[a].y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
-             }
-        }
-    }
-  }
-  
-  function animate() {
-    draw();
-    window.backgroundAnimationId = requestAnimationFrame(animate);
-  }
-
-  // Event Listeners
-  window.addEventListener('resize', setupCanvas);
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-  });
-   window.addEventListener('mouseout', () => {
-    mouse.x = undefined;
-    mouse.y = undefined;
-  });
-
-  setupCanvas();
-  animate();
-}
-
-
-// =================================================================
-// GAME LOGIC (UNCHANGED MECHANICS, BUT NOW STOPS THE NEW BACKGROUND)
+// REPLACED `startGame` with `showHologram`
+// The button on your page still calls `startGame()`, so we keep that name,
+// but it now launches the hologram instead of the game.
 // =================================================================
 function startGame() {
   // Stop the background animation
   if (window.backgroundAnimationId) {
     cancelAnimationFrame(window.backgroundAnimationId);
+    window.backgroundAnimationId = null;
   }
 
-  const canvas = document.getElementById('matrix-canvas');
-  if (!canvas) {
-    alert("Error: Game canvas not found!");
-    return;
-  }
-  const ctx = canvas.getContext('2d');
+  // --- Create the Modal Overlay ---
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 25, 47, 0.8); backdrop-filter: blur(5px);
+    z-index: 2000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s ease;
+  `;
 
-  // Hide other sections when game starts
-  document.querySelectorAll('.section').forEach(section => {
-    section.style.display = 'none';
+  // --- Create a dedicated Canvas for the Hologram ---
+  const hologramCanvas = document.createElement('canvas');
+  overlay.appendChild(hologramCanvas);
+  document.body.appendChild(overlay);
+
+  // Fade in the overlay
+  setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+
+  // --- Close Button ---
+  const closeButton = document.createElement('div');
+  closeButton.innerHTML = '×';
+  closeButton.style.cssText = `
+    position: absolute; top: 20px; right: 30px; font-size: 40px;
+    color: var(--text-secondary); cursor: pointer; transition: color 0.3s ease;
+  `;
+  closeButton.onmouseover = () => { closeButton.style.color = 'var(--text-primary)'; };
+  closeButton.onmouseout = () => { closeButton.style.color = 'var(--text-secondary)'; };
+  overlay.appendChild(closeButton);
+
+  const closeHologram = () => {
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(overlay);
+      // Restart the background effect if it's not already running
+      if (!window.backgroundAnimationId) {
+        initializeConstellationEffect();
+      }
+    }, 300);
+  };
+  
+  closeButton.addEventListener('click', closeHologram);
+  overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) { // Only close if clicking the dark background
+          closeHologram();
+      }
   });
 
-  // Ensure canvas is visible and sized correctly for the game
-  canvas.style.display = 'block';
-  canvas.width = 800;
-  canvas.height = 500; // Game uses a fixed size
 
-  let player = { x: 400, y: 450, width: 30, height: 30, speed: 5, lives: 5, hitTime: 0 };
-  let bullets = [];
-  let enemyBullets = [];
-  let enemies = [];
-  let score = 0;
-  let timeLeft = 60;
-  let lastFire = 0;
-  let wave = 1;
-  let gameActive = true;
-  const keys = {};
+  // --- Hologram Logic ---
+  const ctx = hologramCanvas.getContext('2d');
+  const size = Math.min(window.innerWidth, window.innerHeight) * 0.7;
+  hologramCanvas.width = size;
+  hologramCanvas.height = size;
 
-  // --- Start of unmodified game functions ---
-  function spawnEnemyWave() {
-    if (!gameActive) return;
-    const enemyCount = wave * 2;
-    const spacing = 800 / (enemyCount + 1);
-    for (let i = 0; i < enemyCount; i++) {
-      const x = (i + 1) * spacing + (Math.random() * 40 - 20);
-      enemies.push({
-        x: Math.max(20, Math.min(780, x)),
-        y: -30 - Math.random() * 50,
-        width: 25,
-        height: 25,
-        speed: 0.6 + wave * 0.15,
-      });
-    }
-    wave++;
-  }
+  const points = [];
+  const numPoints = 200;
+  const radius = size * 0.35;
+  let angleX = 0;
+  let angleY = 0;
 
-  setTimeout(spawnEnemyWave, 1000);
-  const waveInterval = setInterval(spawnEnemyWave, 6000);
-
-  function gameLoop() {
-    if (!gameActive) {
-      clearInterval(waveInterval);
-      return;
-    }
-
-    ctx.fillStyle = "rgba(10, 25, 47, 0.2)"; // Use the site's dark blue for trails
-    ctx.fillRect(0, 0, 800, 500);
-
-    ctx.save();
-    if (player.hitTime > 0) {
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = "red";
-      player.hitTime -= (1 / 60);
-    } else {
-      ctx.shadowBlur = 0;
-    }
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.moveTo(player.x, player.y - player.height / 2);
-    ctx.lineTo(player.x - player.width / 2, player.y + player.height / 2);
-    ctx.lineTo(player.x + player.width / 2, player.y + player.height / 2);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-
-    if (keys['ArrowLeft'] && player.x - player.width / 2 > 0) player.x -= player.speed;
-    if (keys['ArrowRight'] && player.x + player.width / 2 < 800) player.x += player.speed;
-    if (keys[' '] && Date.now() - lastFire > 180) {
-      bullets.push({ x: player.x, y: player.y - player.height / 2, dy: -6 });
-      lastFire = Date.now();
-    }
-
-    ctx.fillStyle = '#00f0ff'; // Player bullets
-    bullets = bullets.filter(b => b.y > -10);
-    bullets.forEach(b => {
-      ctx.fillRect(b.x - 2, b.y - 5, 4, 10);
-      b.y += b.dy;
-    });
-
-    ctx.fillStyle = '#FF5733'; // Enemy bullets
-    enemyBullets = enemyBullets.filter(eb => eb.y < 510);
-    enemyBullets.forEach(eb => {
-      ctx.fillRect(eb.x - 2, eb.y, 4, 8);
-      eb.y += 3;
-      if (player.hitTime <= 0 && eb.x > player.x - player.width/2 && eb.x < player.x + player.width/2 && eb.y > player.y - player.height/2 && eb.y < player.y + player.height/2) {
-        player.lives--;
-        player.hitTime = 1.0;
-        enemyBullets.splice(enemyBullets.indexOf(eb), 1);
-        if (player.lives <= 0) {
-          gameActive = false;
-          endGame('SIMULATION FAILED! Score: ' + score);
-        }
-      }
-    });
-
-    enemies.forEach((e, eIndex) => {
-        if (Math.random() < 0.002) {
-             enemyBullets.push({ x: e.x, y: e.y + e.height / 2 });
-        }
-    });
-
-    ctx.fillStyle = '#A020F0'; // Enemies
-    enemies = enemies.filter(e => e.y < 520);
-    enemies.forEach((e, eIndex) => {
-      e.y += e.speed;
-      ctx.fillRect(e.x - e.width / 2, e.y - e.height / 2, e.width, e.height);
-
-      bullets.forEach((b, bIndex) => {
-        if (b.x > e.x - e.width / 2 && b.x < e.x + e.width / 2 && b.y < e.y + e.height / 2 && b.y > e.y - e.height / 2) {
-          score += 10 * wave;
-          enemies.splice(eIndex, 1);
-          bullets.splice(bIndex, 1);
-        }
-      });
-
-      if (player.hitTime <= 0 && e.x + e.width / 2 > player.x - player.width / 2 && e.x - e.width / 2 < player.x + player.width / 2 && e.y + e.height / 2 > player.y - player.height / 2 && e.y - e.height / 2 < player.y + player.height / 2) {
-        player.lives--;
-        player.hitTime = 1.0;
-        enemies.splice(eIndex, 1);
-        if (player.lives <= 0) {
-          gameActive = false;
-          endGame('SIMULATION FAILED! Score: ' + score);
-        }
-      }
-    });
-    
-    // HUD
-    ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = 'rgba(0, 240, 255, 0.7)';
-    ctx.fillRect(10, 10, 200, 90);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.9)';
-    ctx.font = '18px "Courier New", Courier, monospace';
-    ctx.fillText('Score: ' + score, 20, 35);
-    ctx.fillText('Lives: ' + player.lives, 20, 60);
-    ctx.fillText('Time:  ' + Math.ceil(timeLeft), 20, 85);
-    ctx.restore();
-
-    if (timeLeft > 0) {
-      timeLeft -= (1 / 60);
-    } else if (gameActive) {
-      gameActive = false;
-      endGame('SIMULATION COMPLETE! Score: ' + score);
-    }
-    if (gameActive) requestAnimationFrame(gameLoop);
-  }
-
-  function endGame(message) {
-    gameActive = false;
-    // Important: Re-initialize the background effect when the game ends
-    initializeConstellationEffect();
-    document.querySelectorAll('.section').forEach(section => section.style.display = 'flex'); // Use flex to match CSS
-    
-    const popup = document.createElement('div');
-    popup.className = 'game-popup';
-    popup.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(10, 25, 47, 0.95); color: white; padding: 30px; border-radius: 10px; z-index: 1001; text-align: center; font-size: 1.5rem; border: 1px solid var(--accent-blue); box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);`;
-    popup.innerHTML = `${message}<br><button id="replay-btn" style="margin-top: 20px; margin-right: 15px; padding: 8px 15px; background: var(--accent-blue); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">Replay</button><button id="ok-btn" style="margin-top: 20px; padding: 8px 15px; background: #555; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">OK</button>`;
-    document.body.appendChild(popup);
-    
-    popup.addEventListener('click', (e) => {
-      if (e.target.id === 'replay-btn') {
-        popup.remove();
-        startGame();
-      } else if (e.target.id === 'ok-btn') {
-        popup.remove();
-      }
+  // Generate points on a sphere
+  for (let i = 0; i < numPoints; i++) {
+    const phi = Math.acos(-1 + (2 * i) / numPoints);
+    const theta = Math.sqrt(numPoints * Math.PI) * phi;
+    points.push({
+      x: radius * Math.cos(theta) * Math.sin(phi),
+      y: radius * Math.sin(theta) * Math.sin(phi),
+      z: radius * Math.cos(phi)
     });
   }
 
-  document.addEventListener('keydown', (e) => { keys[e.key] = true; });
-  document.addEventListener('keyup', (e) => { keys[e.key] = false; });
-  gameLoop();
+  function rotateAndProject(point) {
+    // Rotate around Y axis
+    const rotY_x = point.x * Math.cos(angleY) - point.z * Math.sin(angleY);
+    const rotY_z = point.x * Math.sin(angleY) + point.z * Math.cos(angleY);
+    // Rotate around X axis
+    const rotX_y = point.y * Math.cos(angleX) - rotY_z * Math.sin(angleX);
+    const rotX_z = point.y * Math.sin(angleX) + rotY_z * Math.cos(angleX);
+
+    const perspective = 300 / (300 + rotX_z); // Simple perspective
+    
+    return {
+      x: rotY_x * perspective + hologramCanvas.width / 2,
+      y: rotX_y * perspective + hologramCanvas.height / 2,
+      z: rotX_z,
+      alpha: (rotX_z + radius) / (2 * radius) // Opacity based on depth
+    };
+  }
+
+  function drawHologram() {
+    ctx.clearRect(0, 0, hologramCanvas.width, hologramCanvas.height);
+    
+    // Draw subtle scanlines for hologram effect
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.05)';
+    for (let i = 0; i < hologramCanvas.height; i += 4) {
+      ctx.fillRect(0, i, hologramCanvas.width, 1);
+    }
+    
+    const projectedPoints = points.map(rotateAndProject);
+    projectedPoints.sort((a, b) => a.z - b.z); // Sort points to draw back-to-front
+
+    // Draw connecting lines
+    ctx.strokeStyle = 'rgba(0, 123, 255, 0.2)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < projectedPoints.length; i++) {
+        for (let j = i + 1; j < projectedPoints.length; j++) {
+            const dx = projectedPoints[i].x - projectedPoints[j].x;
+            const dy = projectedPoints[i].y - projectedPoints[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 50) {
+                ctx.beginPath();
+                ctx.moveTo(projectedPoints[i].x, projectedPoints[i].y);
+                ctx.lineTo(projectedPoints[j].x, projectedPoints[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    
+    // Draw points
+    projectedPoints.forEach(p => {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(0, 240, 255, ${p.alpha * 0.9})`;
+      ctx.arc(p.x, p.y, p.alpha * 2.5, 0, Math.PI * 2); // Size based on depth
+      ctx.fill();
+    });
+
+    angleY += 0.005;
+    angleX += 0.002;
+
+    requestAnimationFrame(drawHologram);
+  }
+
+  drawHologram();
+}
+
+
+// =================================================================
+// INTERACTIVE CONSTELLATION EFFECT (UNCHANGED)
+// =================================================================
+function initializeConstellationEffect() {
+  const canvas = document.getElementById('matrix-canvas');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  const starCount = window.innerWidth < 768 ? 100 : 200;
+  const mouse = { x: undefined, y: undefined, radius: 150 };
+  function setupCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = [];
+    for (let i = 0; i < starCount; i++) {
+      stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 1, baseAlpha: Math.random() * 0.5 + 0.5, alpha: 0 });
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+      star.alpha = star.baseAlpha * (Math.sin(Date.now() * 0.001 + star.x) * 0.5 + 0.5);
+      ctx.fillStyle = `rgba(0, 240, 255, ${star.alpha})`;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    connect();
+  }
+  function connect() {
+    for (let a = 0; a < stars.length; a++) {
+      for (let b = a; b < stars.length; b++) {
+        let dx = stars[a].x - stars[b].x;
+        let dy = stars[a].y - stars[b].y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 120) {
+          let opacity = 1 - (distance / 120);
+          ctx.strokeStyle = `rgba(0, 123, 255, ${opacity * 0.5})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(stars[a].x, stars[a].y);
+          ctx.lineTo(stars[b].x, stars[b].y);
+          ctx.stroke();
+        }
+      }
+      if (mouse.x !== undefined && mouse.y !== undefined) {
+        let dxMouse = stars[a].x - mouse.x;
+        let dyMouse = stars[a].y - mouse.y;
+        let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+        if (distanceMouse < mouse.radius) {
+          let opacity = 1 - (distanceMouse / mouse.radius);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(stars[a].x, stars[a].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+  function animate() {
+    draw();
+    window.backgroundAnimationId = requestAnimationFrame(animate);
+  }
+  window.addEventListener('resize', setupCanvas);
+  window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+  window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+  setupCanvas();
+  animate();
 }
 
 
