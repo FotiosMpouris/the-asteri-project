@@ -1,88 +1,37 @@
 // =================================================================
-// THE ASTERI PROJECT - SCRIPT.JS - V3.0
-// Replaced the game with a non-interactive 3D Hologram Planet effect.
+// THE ASTERI PROJECT - SCRIPT.JS - V4.0
+// Hologram is now the main background feature.
+// Game and constellation logic have been removed.
 // =================================================================
 
-// Keep a reference to the background animation to manage its state.
-window.backgroundAnimationId = null;
-
 document.addEventListener('DOMContentLoaded', () => {
-  initializeConstellationEffect();
+  // Initialize the new hologram directly on the main canvas
+  initializeHologram();
+
+  // Keep the original click effects
   document.addEventListener('click', (e) => {
     if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && !e.target.closest('a')) {
       createParticle(e);
       createEnergyWave(e.pageX, e.pageY);
     }
   });
+
   setupMobileNav();
   window.addEventListener('scroll', handleScroll);
 });
 
 
 // =================================================================
-// REPLACED `startGame` with `showHologram`
-// The button on your page still calls `startGame()`, so we keep that name,
-// but it now launches the hologram instead of the game.
+// NEW HOLOGRAPHIC PLANET ON THE MAIN CANVAS
 // =================================================================
-function startGame() {
-  // Stop the background animation
-  if (window.backgroundAnimationId) {
-    cancelAnimationFrame(window.backgroundAnimationId);
-    window.backgroundAnimationId = null;
-  }
+function initializeHologram() {
+  const canvas = document.getElementById('matrix-canvas');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
 
-  // --- Create the Modal Overlay ---
-  const overlay = document.createElement('div');
-  overlay.style.cssText = `
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(10, 25, 47, 0.8); backdrop-filter: blur(5px);
-    z-index: 2000; display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.3s ease;
-  `;
-
-  // --- Create a dedicated Canvas for the Hologram ---
-  const hologramCanvas = document.createElement('canvas');
-  overlay.appendChild(hologramCanvas);
-  document.body.appendChild(overlay);
-
-  // Fade in the overlay
-  setTimeout(() => { overlay.style.opacity = '1'; }, 10);
-
-  // --- Close Button ---
-  const closeButton = document.createElement('div');
-  closeButton.innerHTML = '×';
-  closeButton.style.cssText = `
-    position: absolute; top: 20px; right: 30px; font-size: 40px;
-    color: var(--text-secondary); cursor: pointer; transition: color 0.3s ease;
-  `;
-  closeButton.onmouseover = () => { closeButton.style.color = 'var(--text-primary)'; };
-  closeButton.onmouseout = () => { closeButton.style.color = 'var(--text-secondary)'; };
-  overlay.appendChild(closeButton);
-
-  const closeHologram = () => {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-      document.body.removeChild(overlay);
-      // Restart the background effect if it's not already running
-      if (!window.backgroundAnimationId) {
-        initializeConstellationEffect();
-      }
-    }, 300);
-  };
-  
-  closeButton.addEventListener('click', closeHologram);
-  overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) { // Only close if clicking the dark background
-          closeHologram();
-      }
-  });
-
-
-  // --- Hologram Logic ---
-  const ctx = hologramCanvas.getContext('2d');
-  const size = Math.min(window.innerWidth, window.innerHeight) * 0.7;
-  hologramCanvas.width = size;
-  hologramCanvas.height = size;
+  const size = 600; // Fixed size for the hologram sphere area
+  canvas.width = size;
+  canvas.height = size;
 
   const points = [];
   const numPoints = 200;
@@ -107,32 +56,32 @@ function startGame() {
     const rotY_z = point.x * Math.sin(angleY) + point.z * Math.cos(angleY);
     // Rotate around X axis
     const rotX_y = point.y * Math.cos(angleX) - rotY_z * Math.sin(angleX);
-    const rotX_z = point.y * Math.sin(angleX) + rotY_z * Math.cos(angleX);
+    const rotX_z = point.y * Math.sin(angleX) + rotY_z * Math.cos(angleY); // Subtle wobble
 
-    const perspective = 300 / (300 + rotX_z); // Simple perspective
+    const perspective = 300 / (300 + rotX_z);
     
     return {
-      x: rotY_x * perspective + hologramCanvas.width / 2,
-      y: rotX_y * perspective + hologramCanvas.height / 2,
+      x: rotY_x * perspective + canvas.width / 2,
+      y: rotX_y * perspective + canvas.height / 2,
       z: rotX_z,
-      alpha: (rotX_z + radius) / (2 * radius) // Opacity based on depth
+      alpha: (rotX_z + radius) / (2 * radius)
     };
   }
 
   function drawHologram() {
-    ctx.clearRect(0, 0, hologramCanvas.width, hologramCanvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw subtle scanlines for hologram effect
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.05)';
-    for (let i = 0; i < hologramCanvas.height; i += 4) {
-      ctx.fillRect(0, i, hologramCanvas.width, 1);
+    // Subtle scanlines for hologram effect
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.03)';
+    for (let i = 0; i < canvas.height; i += 3) {
+      ctx.fillRect(0, i, canvas.width, 1);
     }
     
     const projectedPoints = points.map(rotateAndProject);
-    projectedPoints.sort((a, b) => a.z - b.z); // Sort points to draw back-to-front
+    projectedPoints.sort((a, b) => a.z - b.z);
 
     // Draw connecting lines
-    ctx.strokeStyle = 'rgba(0, 123, 255, 0.2)';
+    ctx.strokeStyle = 'rgba(0, 123, 255, 0.15)';
     ctx.lineWidth = 1;
     for (let i = 0; i < projectedPoints.length; i++) {
         for (let j = i + 1; j < projectedPoints.length; j++) {
@@ -152,90 +101,17 @@ function startGame() {
     projectedPoints.forEach(p => {
       ctx.beginPath();
       ctx.fillStyle = `rgba(0, 240, 255, ${p.alpha * 0.9})`;
-      ctx.arc(p.x, p.y, p.alpha * 2.5, 0, Math.PI * 2); // Size based on depth
+      ctx.arc(p.x, p.y, p.alpha * 2.5, 0, Math.PI * 2);
       ctx.fill();
     });
 
     angleY += 0.005;
-    angleX += 0.002;
+    angleX += 0.001;
 
     requestAnimationFrame(drawHologram);
   }
 
   drawHologram();
-}
-
-
-// =================================================================
-// INTERACTIVE CONSTELLATION EFFECT (UNCHANGED)
-// =================================================================
-function initializeConstellationEffect() {
-  const canvas = document.getElementById('matrix-canvas');
-  if (!canvas || !canvas.getContext) return;
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  const starCount = window.innerWidth < 768 ? 100 : 200;
-  const mouse = { x: undefined, y: undefined, radius: 150 };
-  function setupCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = [];
-    for (let i = 0; i < starCount; i++) {
-      stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 1, baseAlpha: Math.random() * 0.5 + 0.5, alpha: 0 });
-    }
-  }
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(star => {
-      star.alpha = star.baseAlpha * (Math.sin(Date.now() * 0.001 + star.x) * 0.5 + 0.5);
-      ctx.fillStyle = `rgba(0, 240, 255, ${star.alpha})`;
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    connect();
-  }
-  function connect() {
-    for (let a = 0; a < stars.length; a++) {
-      for (let b = a; b < stars.length; b++) {
-        let dx = stars[a].x - stars[b].x;
-        let dy = stars[a].y - stars[b].y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 120) {
-          let opacity = 1 - (distance / 120);
-          ctx.strokeStyle = `rgba(0, 123, 255, ${opacity * 0.5})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(stars[a].x, stars[a].y);
-          ctx.lineTo(stars[b].x, stars[b].y);
-          ctx.stroke();
-        }
-      }
-      if (mouse.x !== undefined && mouse.y !== undefined) {
-        let dxMouse = stars[a].x - mouse.x;
-        let dyMouse = stars[a].y - mouse.y;
-        let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
-        if (distanceMouse < mouse.radius) {
-          let opacity = 1 - (distanceMouse / mouse.radius);
-          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(stars[a].x, stars[a].y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.stroke();
-        }
-      }
-    }
-  }
-  function animate() {
-    draw();
-    window.backgroundAnimationId = requestAnimationFrame(animate);
-  }
-  window.addEventListener('resize', setupCanvas);
-  window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-  window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-  setupCanvas();
-  animate();
 }
 
 
