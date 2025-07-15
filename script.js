@@ -1,6 +1,7 @@
 // =================================================================
-// THE ASTERI PROJECT - SCRIPT.JS - V7.1 (Parallax Fixed)
-// - The 3D parallax effect has been made significantly more pronounced.
+// THE ASTERI PROJECT - SCRIPT.JS - V8.0 (Definitive Version)
+// - REMOVED mouse-based parallax effect.
+// - IMPLEMENTED a new, non-interactive "shimmering" star animation.
 // =================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,18 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =================================================================
-// UNIFIED STARFIELD & HOLOGRAM ANIMATION WITH PRONOUNCED PARALLAX
+// UNIFIED STARFIELD & HOLOGRAM ANIMATION WITH SHIMMERING STARS
 // =================================================================
 function initializeUnifiedEffect() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext('2d');
 
-  const mouse = { x: 0, y: 0 };
-  
+  // --- Starfield Setup ---
   let stars = [];
   const starCount = window.innerWidth < 768 ? 150 : 300;
 
+  // --- Hologram Setup ---
   const hologramPoints = [];
   const numHologramPoints = 250;
   const hologramRadius = (Math.min(window.innerWidth, window.innerHeight) * 0.3);
@@ -37,8 +38,6 @@ function initializeUnifiedEffect() {
   function setup() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    mouse.x = canvas.width / 2;
-    mouse.y = canvas.height / 2;
     
     stars = [];
     for (let i = 0; i < starCount; i++) {
@@ -46,10 +45,9 @@ function initializeUnifiedEffect() {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         radius: Math.random() * 1.2 + 0.5,
-        alpha: Math.random() * 0.5 + 0.2,
-        pulseSpeed: (Math.random() - 0.5) * 0.0005,
-        // CORRECTED: Depth range is now greater for a better 3D effect.
-        depth: Math.random() * 0.8 + 0.2 // Range: 0.2 (far) to 1.0 (near)
+        // NEW: Shimmer properties for alpha and size
+        alpha: Math.random() * 0.5 + 0.2, // Base brightness
+        shimmerSpeed: (Math.random() + 0.1) * 0.001 // Unique speed for each star
       });
     }
 
@@ -62,18 +60,16 @@ function initializeUnifiedEffect() {
   }
 
   function drawStarfield() {
-    // CORRECTED: The divisor is smaller, making the parallax effect much stronger.
-    const offsetX = (mouse.x - canvas.width / 2) / 8; 
-    const offsetY = (mouse.y - canvas.height / 2) / 8;
-
     stars.forEach(star => {
-      const parallaxX = star.x + offsetX * star.depth;
-      const parallaxY = star.y + offsetY * star.depth;
+      // Calculate shimmer for both opacity and size
+      const shimmer = Math.abs(Math.sin(Date.now() * star.shimmerSpeed + star.x));
       
-      const pulse = Math.sin(Date.now() * star.pulseSpeed + star.x) * 0.5 + 0.5;
-      ctx.fillStyle = `rgba(204, 214, 246, ${star.alpha * pulse})`;
+      const currentAlpha = star.alpha * shimmer;
+      const currentRadius = star.radius * shimmer;
+
+      ctx.fillStyle = `rgba(204, 214, 246, ${currentAlpha})`;
       ctx.beginPath();
-      ctx.arc(parallaxX, parallaxY, star.radius, 0, Math.PI * 2);
+      ctx.arc(star.x, star.y, currentRadius, 0, Math.PI * 2);
       ctx.fill();
     });
   }
@@ -129,11 +125,9 @@ function initializeUnifiedEffect() {
     requestAnimationFrame(animate);
   }
 
+  // --- Event Listeners ---
   window.addEventListener('resize', setup);
-  window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-  });
+  // REMOVED: mousemove listener is no longer needed.
 
   setup();
   animate();
