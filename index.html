@@ -5,13 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Asteri Project</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- NEW STYLES for the Hologram Hero Section -->
+  <style>
+    /* New Deep Space Background */
+    body {
+      background: #0a192f; /* Fallback color */
+      background-image: radial-gradient(ellipse at 70% 30%, #1a1f35 0%, #0a192f 60%);
+    }
+
+    /* Hero section to contain the hologram */
+    #hologram-hero {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin-top: 0; /* Remove top margin for this section */
+      padding-top: 0;
+    }
+
+    /* Repurpose the main canvas for the hologram */
+    #matrix-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px !important; /* Fixed size for hologram */
+      height: 600px !important;
+      z-index: 1;
+      pointer-events: none; /* Make it non-interactive */
+    }
+
+    /* Style the title to float above the hologram */
+    #hologram-hero .title {
+      z-index: 2;
+      position: relative;
+      margin-bottom: 300px; /* Position it above the center */
+      text-shadow: 0 0 15px var(--accent-glow);
+    }
+    
+    /* Scroll down indicator */
+    #hologram-hero::after {
+        content: 'SCROLL TO EXPLORE';
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--text-secondary);
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: 2px;
+        font-size: 0.8rem;
+        opacity: 0.7;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+
+    /* Adjustments for the content section below the hero */
+    #main-content {
+        margin-top: 0; /* Content starts right after hero */
+        min-height: auto; /* No longer needs to be full height */
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+        #matrix-canvas {
+            width: 100vw !important;
+            height: 80vh !important;
+        }
+        #hologram-hero .title {
+            margin-bottom: 200px;
+        }
+    }
+  </style>
 </head>
+
 <body>
+  <!-- The main canvas is now used for the hologram in the hero section -->
   <canvas id="matrix-canvas"></canvas>
   <div id="particles-container" class="particles-container"></div>
 
  <nav class="navbar">
-  <!-- Placeholder for logo -->
   <div class="logo"><a href="index.html"><img src="images/asteri-project-logo.png" alt="The Asteri Project Logo" height="40" style="vertical-align: middle;"></a></div>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
@@ -19,7 +100,6 @@
     <li><a href="simulation.html">The Simulation</a></li>
     <li><a href="pitch.html">Pitch Overview</a></li>
   </ul>
-  <!-- Removed the Matrix M -->
   <div id="hamburger" class="hamburger"><span></span><span></span><span></span></div>
 </nav>
 
@@ -28,17 +108,20 @@
     <a href="characters.html">Characters</a>
     <a href="simulation.html">The Simulation</a>
     <a href="pitch.html">Pitch Overview</a>
-    <!-- Removed old mobile dropdown -->
   </div>
 
-  <section id="home" class="section">
+  <!-- NEW HOLOGRAPHIC HERO SECTION -->
+  <section id="hologram-hero" class="section">
+    <h1 class="title" style="font-size: 3.5rem;">
+      WELCOME TO <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
+    </h1>
+  </section>
+
+  <!-- MOVED ORIGINAL CONTENT INTO THIS NEW SECTION -->
+  <section id="main-content" class="section">
     <div class="translucent-box">
-      <h1 class="title" style="font-size: 3.5rem; text-shadow: 0 0 10px var(--accent-glow);">
-      <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
-      </h1>
       <p class="subtitle">NAVIGATE THE NESTED REALITIES. UNCOVER THE TRUTH.</p>
 
-      <!-- Video Placeholder -->
       <div style="margin: 2rem auto; max-width: 720px; aspect-ratio: 16 / 9; background: #111; border: 1px solid var(--accent-blue); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
          <video width="100%" height="100%" controls style="display: block;">
             <source src="videos/theasteriproject.mp4" type="video/mp4">
@@ -46,21 +129,15 @@
          </video>
       </div>
 
-
       <div class="skills-container">
-        <!-- Placeholder Icons - Update image src and labels as needed -->
         <a href="simulation.html"><div class="skill-icon"><img src="images/simulation-overview.png" alt="Simulation Overview"><span class="icon-label">DREAM-STATE SIMS</span></div></a>
         <a href="simulation.html#nested-suns"><div class="skill-icon"><img src="images/nested-suns.png" alt="Nested Suns"><span class="icon-label">NESTED SUNS</span></div></a>
         <a href="simulation.html#bio-grids"><div class="skill-icon"><img src="images/bio-grid.png" alt="Bio-Computing Grid"><span class="icon-label">BIO-COMPUTING</span></div></a>
       </div>
-      <button onclick="startGame()" style="padding: 1rem 2rem; background: var(--accent-blue); color: #fff; border: none; cursor: pointer; margin-top: 2rem; font-weight: bold;">
-        INITIATE TRAINING SIMULATION
-      </button>
-       <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">(Desktop Only)</p>
+      
+      <!-- The button that launched the game/hologram has been removed -->
     </div>
   </section>
-
-  <!-- Removed old Project, Manifesto, Uplink sections -->
 
   <script src="script.js"></script>
 </body>
