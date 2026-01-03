@@ -3,122 +3,380 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Asteri Project</title>
+  <title>The Asteri Project | The Beginning of the Sun</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- FINAL STYLES FOR PARALLAX & FUTURISTIC CONTENT SECTION -->
-  <style>
-    body {
-      background: transparent;
-    }
-
-    #matrix-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: -1;
-      background-color: #000;
-    }
-
-    #hologram-hero {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-    }
-    
-    #hologram-hero .title-container {
-        padding-bottom: 25vh;
-    }
-
-    #hologram-hero::after {
-        content: 'SCROLL TO EXPLORE';
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: var(--text-secondary);
-        font-family: 'Courier New', Courier, monospace;
-        letter-spacing: 2px;
-        font-size: 0.8rem;
-        opacity: 0.7;
-        animation: pulse 2.5s infinite alternate;
-        z-index: 2;
-    }
-
-    @keyframes pulse {
-        from { opacity: 0.5; }
-        to { opacity: 1; }
-    }
-
-    /* NEW FUTURISTIC BACKGROUND FOR THE MAIN CONTENT */
-    #main-content {
-      position: relative;
-      z-index: 5;
-      /* Layer 1: A subtle nebula/galaxy effect */
-      background-image:
-        radial-gradient(ellipse at 20% 80%, rgba(0, 123, 255, 0.1), transparent 50%),
-        radial-gradient(ellipse at 80% 30%, rgba(0, 240, 255, 0.1), transparent 50%),
-        /* Layer 2: A faint hexagonal grid pattern */
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23007bff' fill-opacity='0.05'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-        /* Layer 3: The solid base color */
-        var(--primary-dark);
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <!-- Background Effects -->
   <canvas id="matrix-canvas"></canvas>
   <div id="particles-container" class="particles-container"></div>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="#story-intro" class="cta-button">BOSun</a>
+    </div>
+    <div class="nav-right">
+      <a href="#contact" class="cta-button">Access Pitch Deck</a>
+    </div>
+  </nav>
 
- <nav class="navbar">
-  <div class="logo"><a href="index.html"><img src="images/asteri-project-logo.png" alt="The Asteri Project Logo" height="40" style="vertical-align: middle;"></a></div>
-  <div class="title-container">
-      <h1 class="title" style="font-size: 3.5rem; text-shadow: 0 0 15px var(--accent-glow);">
-        <span style="color: var(--accent-orange);">Under Construction</span>
-      </h1>
-    </div>   
-   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="characters.html">Characters</a></li>
-    <li><a href="simulation.html">The Simulation</a></li>
-    <li><a href="pitch.html">Pitch Overview</a></li>
-  </ul>
-  <div id="hamburger" class="hamburger"><span></span><span></span><span></span></div>
-</nav>
-
-  <div id="mobile-menu" class="mobile-menu">
-    <a href="index.html">Home</a>
-    <a href="characters.html">Characters</a>
-    <a href="simulation.html">The Simulation</a>
-    <a href="pitch.html">Pitch Overview</a>
-  </div>
-
-  <section id="hologram-hero" class="section">
-    <div class="title-container">
-      <h1 class="title" style="font-size: 3.5rem; text-shadow: 0 0 15px var(--accent-glow);">
-        <span style="color: var(--accent-blue);">THE ASTERI PROJECT</span>
-      </h1>
+  <!-- SECTION 1: HERO -->
+  <section id="hero" class="section hero-section">
+    <video class="background-video" autoplay muted loop playsinline>
+      <source src="videos/hero-background.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+    
+    <div class="hero-content">
+      <div class="hero-tag">A STORY ABOUT CONSCIOUSNESS</div>
+      <h1 class="main-title glitch-text" data-text="THE ASTERI PROJECT">THE ASTERI PROJECT</h1>
+      <p class="hero-question">You've died before. And you're starting to remember.</p>
+      <div class="technical-readout">
+        <div class="readout-item" title="Simulation accuracy to base reality">
+          <span class="readout-label">FIDELITY</span>
+          <span class="readout-value">99.97%</span>
+          <span class="readout-hint">Simulation Accuracy</span>
+        </div>
+        <span class="readout-divider"></span>
+        <div class="readout-item" title="Networked human consciousness nodes">
+          <span class="readout-label">SUBSTRATE</span>
+          <span class="readout-value">8.4B NODES</span>
+          <span class="readout-hint">Bio-Computing Network</span>
+        </div>
+        <span class="readout-divider"></span>
+        <div class="readout-item" title="Time compression ratio">
+          <span class="readout-label">COMPRESSION</span>
+          <span class="readout-value">1:1460</span>
+          <span class="readout-hint">Temporal Ratio</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="scroll-indicator">
+      <span></span>
+      <div class="scroll-line"></div>
     </div>
   </section>
 
-  <section id="main-content" class="section">
-    <div class="translucent-box">
-      <p class="subtitle">NAVIGATE THE NESTED REALITIES. UNCOVER THE TRUTH.</p>
-      <div style="margin: 2rem auto; max-width: 720px; aspect-ratio: 16 / 9; background: #111; border: 1px solid var(--accent-blue);">
-         <video width="100%" height="100%" controls style="display: block;">
-            <source src="videos/theasteriproject.mp4" type="video/mp4">
-            Video placeholder: theasteriproject.mp4 not found.
-         </video>
+  <!-- SECTION 2: THE BEGINNING OF THE SUN (MOVED UP) -->
+  <section id="story-intro" class="section story-section">
+    <div class="section-content">
+      <div class="story-content">
+        <div class="final-tag">LIMITED SERIES / FEATURE FILM</div>
+        <h2 class="story-title">THE BEGINNING<br>OF THE SUN</h2>
+        
+        <div class="story-description fade-in-scroll">
+          <p class="story-lead">A story about consciousness confronting the limits of reality.</p>
+          <p class="story-tagline">Nested simulations. Bio-computational networks. Dimensional boundaries. The weight of questions that have no answers.</p>
+        </div>
+        
+        <div class="story-divider fade-in-scroll"></div>
+        
+        <div class="story-context fade-in-scroll">
+          <h3 class="story-context-title">Let It Begin</h3>
+        </div>
+        
+        <div class="story-intro-text fade-in-scroll">
+          <p class="intro-paragraph">The year is 2323. For 300 years, Epsilon Star Strategies has implemented simulation engagement for all citizens of colonized space. Requirements include a minimum of three compression tours within the Epsilon simulation systems.</p>
+          
+          <p class="intro-paragraph">Training starts at age 13 standard. Evaluations are administered following each session. One full year of submersion is equivalent to 80 years of lived experience.</p>
+          
+          <p class="intro-paragraph">It is well understood that with the advent of extreme technological capabilities comes a responsibility for proficient self-regulation. Otherwise, entire planets can be lost.</p>
+          
+          <p class="intro-paragraph">The simulations are not punishment. They are preparation. Each citizen emerges with the emotional maturity of someone who has lived multiple lifetimes—who has experienced love, loss, consequence, and the weight of choices that span decades. The recklessness of youth is replaced with the wisdom that only comes at the end of a long life.</p>
+          
+          <p class="intro-paragraph">But Asteri begins to notice something. Small inconsistencies. Memories that don't align. Places that shouldn't exist. And a growing suspicion that the "real world" he graduated into might itself be another layer of the simulation.</p>
+          
+          <p class="intro-paragraph">How many times has he lived? How many times has he died? And if this reality is simulated—what lies beyond it?</p>
+          
+          <p class="intro-emphasis">Training requirements are unavoidable. All citizens must comply.</p>
+        </div>
+        
+        <div class="pitch-grid fade-in-scroll">
+          <div class="pitch-card">
+            <div class="pitch-label">Format</div>
+            <div class="pitch-value">Limited Series / Feature</div>
+          </div>
+          <div class="pitch-card">
+            <div class="pitch-label">Genre</div>
+            <div class="pitch-value">Sci-Fi / Philosophical Thriller</div>
+          </div>
+          <div class="pitch-card">
+            <div class="pitch-label">Comparable Titles</div>
+            <div class="pitch-value">Dune × The Expanse × Westworld</div>
+          </div>
+        </div>
       </div>
-      <div class="skills-container">
-        <a href="simulation.html"><div class="skill-icon"><img src="images/simulation-overview.png" alt="Simulation Overview"><span class="icon-label">DREAM-STATE SIMS</span></div></a>
-        <a href="simulation.html#nested-suns"><div class="skill-icon"><img src="images/nested-suns.png" alt="Nested Suns"><span class="icon-label">NESTED SUNS</span></div></a>
-        <a href="simulation.html#bio-grids"><div class="skill-icon"><img src="images/bio-grid.png" alt="Bio-Computing Grid"><span class="icon-label">BIO-COMPUTING</span></div></a>
+    </div>
+  </section>
+
+  <!-- SECTION 3: THE COMPRESSION -->
+  <section id="compression" class="section dark-section">
+    <div class="section-content">
+      <div class="section-number">01</div>
+      <h2 class="section-title">You live three lifetimes<br>in six months.</h2>
+      
+      <div class="content-grid">
+        <div class="content-block fade-in-scroll">
+          <p class="large-text">Birth to death. Three times. Compressed.</p>
+          <p>Every sensation preserved. Every memory intact. Every mistake learned from.</p>
+        </div>
+        
+        <div class="content-block fade-in-scroll">
+          <p>The recklessness of youth replaced with the wisdom of age. The impulsivity that destroys civilizations—extracted, processed, neutralized.</p>
+        </div>
+        
+        <div class="content-block fade-in-scroll">
+          <p>When you emerge, you've lived 240 years. You're ready for a universe where a single decision can end billions of lives.</p>
+        </div>
+        
+        <div class="data-grid fade-in-scroll">
+          <div class="data-card">
+            <div class="data-value">240-400</div>
+            <div class="data-label">Years of subjective experience</div>
+          </div>
+          <div class="data-card">
+            <div class="data-value">6-8</div>
+            <div class="data-label">Months of real time</div>
+          </div>
+          <div class="data-card">
+            <div class="data-value">1:1,460</div>
+            <div class="data-label">Temporal compression ratio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: THE GLITCH -->
+  <section id="glitch" class="section">
+    <video class="background-video" autoplay muted loop playsinline>
+      <source src="videos/glitch-reality.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay dark"></div>
+    
+    <div class="section-content">
+      <div class="section-number glitch-number">02</div>
+      <h2 class="section-title">Then you notice<br>the errors.</h2>
+      
+      <div class="glitch-content">
+        <div class="glitch-statement fade-in-scroll">
+          <div class="glitch-marker"></div>
+          <p>How does technological change happen so fast? Yesterday's impossible is today's mundane.</p>
+        </div>
+        
+        <div class="glitch-statement fade-in-scroll">
+          <div class="glitch-marker"></div>
+          <p>Architecture that predates recorded history.</p>
+        </div>
+        
+        <div class="glitch-statement fade-in-scroll">
+          <div class="glitch-marker"></div>
+          <p>Memories that don't belong to you. Faces you've never met but somehow know.</p>
+        </div>
+        
+        <div class="glitch-statement fade-in-scroll">
+          <div class="glitch-marker"></div>
+          <p>A name—<span class="highlight">Asteri</span>—that echoes across lifetimes you can't quite remember.</p>
+        </div>
+        
+        <div class="quote-block fade-in-scroll">
+          <p class="quote-text">"The simulation is perfect. Unless you know where to look."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: THE NESTING -->
+  <section id="nesting" class="section dark-section">
+    <div class="section-content">
+      <div class="section-number">03</div>
+      <h2 class="section-title">How many layers<br>are you down?</h2>
+      
+      <div class="nesting-visual">
+        <div id="nested-spheres" class="nested-spheres-container"></div>
+      </div>
+      
+      <div class="layer-grid fade-in-scroll">
+        <div class="layer-card">
+          <div class="layer-number">01</div>
+          <div class="layer-name">Training simulation</div>
+          <div class="layer-status">Confirmed</div>
+        </div>
+        <div class="layer-card">
+          <div class="layer-number">02</div>
+          <div class="layer-name">The "real" world</div>
+          <div class="layer-status">Suspected</div>
+        </div>
+        <div class="layer-card">
+          <div class="layer-number">03</div>
+          <div class="layer-name">Unknown</div>
+          <div class="layer-status">Possible</div>
+        </div>
+        <div class="layer-card">
+          <div class="layer-number">∞</div>
+          <div class="layer-name">Unknowable</div>
+          <div class="layer-status">Probable</div>
+        </div>
+      </div>
+      
+      <div class="quote-block fade-in-scroll">
+        <p class="quote-text">Each reality is a dream within a dream. You might never wake up. You might already be awake.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: THE BIO-GRID -->
+  <section id="bio-grid" class="section">
+    <video class="background-video" autoplay muted loop playsinline>
+      <source src="videos/bio-grid.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay dark"></div>
+    
+    <div class="section-content">
+      <div class="section-number">04</div>
+      <h2 class="section-title">Your brain is<br>the hardware.</h2>
+      
+      <div class="bio-content">
+        <div class="bio-statement fade-in-scroll">
+          <p class="large-text">86 billion neurons per human.</p>
+          <p class="large-text">8.4 billion humans.</p>
+          <p class="large-text">All networked.</p>
+        </div>
+        
+        <div class="bio-statement fade-in-scroll">
+          <p>Silicon can't dream. Silicon can't feel regret. Silicon can't understand what it means to watch someone you love die.</p>
+        </div>
+        
+        <div class="bio-statement fade-in-scroll">
+          <p>But biology can. And when you network billions of biological processors together, you get something silicon never could: <span class="highlight">perfect simulation</span>.</p>
+        </div>
+        
+        <div class="bio-note fade-in-scroll">
+          <p class="small-text">Every organism with neural capacity becomes part of the computational substrate. Not just humans. Everything that can process information. Nature itself becomes the instrument of computation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: THE DIMENSIONAL -->
+  <section id="dimensional" class="section dark-section">
+    <video class="background-video" autoplay muted loop playsinline>
+      <source src="videos/dimensional.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+    
+    <div class="section-content">
+      <div class="section-number">05</div>
+      <h2 class="section-title">Where are<br>the aliens?</h2>
+      
+      <div class="dimensional-content">
+        <div class="dimensional-statement fade-in-scroll">
+          <p class="large-text">They're here. You just can't see them.</p>
+        </div>
+        
+        <div class="dimensional-statement fade-in-scroll">
+          <p>Mushrooms sprout from mycelium networks we can't see underground. We observe the fruiting body, never the roots.</p>
+        </div>
+        
+        <div class="dimensional-statement fade-in-scroll">
+          <p>What if consciousness works the same way? What if what we call "life" is just the visible part—sprouting from dimensions we can't perceive?</p>
+        </div>
+        
+        <div class="dimensional-statement fade-in-scroll">
+          <p>And what if those dimensions are <span class="highlight">populated</span>?</p>
+        </div>
+        
+        <div class="dimensional-statement fade-in-scroll">
+          <p class="large-text">What if they have a use for bio-droids?</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: THE CHARACTERS -->
+  <section id="characters" class="section">
+    <div class="section-content">
+      <div class="section-number">06</div>
+      <h2 class="section-title">Every love story<br>that ever was.</h2>
+      
+      <div class="characters-grid">
+        <div class="character-card fade-in-scroll">
+          <div class="character-symbol">★</div>
+          <h3 class="character-name">ASTERI</h3>
+          <div class="character-tagline">Star • Signal • Seeker</div>
+          <p class="character-desc">He is Adam reaching for knowledge. Orpheus descending into darkness. Every protagonist who ever questioned reality. Across infinite simulations, across countless lifetimes, he is the pattern that repeats—the consciousness that refuses to accept the boundaries of its prison. He carries the weight of every version of himself that came before.</p>
+        </div>
+        
+        <div class="character-card fade-in-scroll">
+          <div class="character-symbol">◈</div>
+          <h3 class="character-name">ABIGAIL MAGNETIS</h3>
+          <div class="character-tagline">Force • Fire • First Cause</div>
+          <p class="character-desc">She is Eve offering the apple. Eurydice calling from beyond. Every catalyst who ever sparked awakening. Not the one who waits—the one who acts. Across all simulations, she is the force that pulls him toward truth, even when truth destroys everything. Their love echoes through infinite iterations, each time choosing knowledge over comfort, danger over safety.</p>
+        </div>
+      </div>
+      
+      <div class="quote-block fade-in-scroll">
+        <p class="quote-text">They are every mythological pair that ever chose forbidden knowledge. Every love that transcended the boundaries of their world. Simulations all the way down—and in each one, they find each other again.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: THE RESOURCE -->
+  <section id="resource" class="section">
+    <div class="section-content">
+      <div class="section-number">07</div>
+      <h2 class="section-title glitch-text" data-text="What if it's not training?">What if it's<br>not training?</h2>
+      
+      <div class="resource-content">
+        <div class="resource-statement fade-in-scroll">
+          <p>On cosmic timescales, human civilization is a microsecond.</p>
+        </div>
+        
+        <div class="resource-statement fade-in-scroll">
+          <p>A single human life is nothing.</p>
+        </div>
+        
+        <div class="resource-statement fade-in-scroll">
+          <p class="large-text">What if the simulations aren't for your benefit?</p>
+        </div>
+        
+        <div class="resource-statement fade-in-scroll">
+          <p class="emphasis-text">What if you're being <span class="highlight">farmed</span>?</p>
+        </div>
+        
+        <div class="void-space"></div>
+        
+        <div class="question-mark fade-in-scroll">
+          <span class="giant-question">?</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: CONTACT / FINAL CTA -->
+  <section id="contact" class="section final-section">
+    <div class="section-content">
+      <div class="final-content">
+        <div class="cta-section fade-in-scroll">
+          <h3 class="cta-title">Ready to explore the simulation?</h3>
+          <a href="mailto:contact@asteriproject.com" class="cta-button-large">
+            <span>Request Full Pitch Deck</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <p class="cta-subtext">For investors, producers, and collaborators</p>
+        </div>
+        
+        <div class="final-quote fade-in-scroll">
+          <p class="quote-text">"The goal is to make you question everything you think you know about reality."</p>
+        </div>
       </div>
     </div>
   </section>
